@@ -6,9 +6,31 @@ import jwt from "jsonwebtoken";
 
 connect();
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
+    const response = NextResponse.json(
+      {
+        message: "User logged out",
+      },
+      {
+        status: 200,
+      }
+    );
+
+
+    response.cookies.set("token", "", {
+      httpOnly: true,
+    });
     
+
+    return NextResponse.json(
+      {
+        message: "User logged out",
+      },
+      {
+        status: 200,
+      }
+    );
   } catch (error: any) {
     console.error("user does not logout in server", error);
     return NextResponse.json(
