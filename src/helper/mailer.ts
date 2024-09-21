@@ -2,7 +2,17 @@ import nodemailer from "nodemailer";
 import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 
-export const sendEmail = async ({ email, emailType, userId }: any) => {
+interface SendEmailParams {
+  email: string;
+  emailType: "VERIFY" | "RESET";
+  userId: string;
+}
+
+export const sendEmail = async ({
+  email,
+  emailType,
+  userId,
+}: SendEmailParams) => {
   try {
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
 
@@ -46,7 +56,11 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
     const mailresponse = await transport.sendMail(mailOptions);
 
     return mailresponse;
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
 };
