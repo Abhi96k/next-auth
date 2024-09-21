@@ -40,7 +40,6 @@ export const getDataFromToken = async (request: NextRequest) => {
       decodedToken
     );
 
-    // Return the decoded token data
     return decodedToken;
   }
   catch (err: any) {
