@@ -8,7 +8,6 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
-
     
   } catch (error: any) {
     console.error("user does not logout in server", error);
