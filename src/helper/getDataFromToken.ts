@@ -32,17 +32,22 @@ export const getDataFromToken = async (request: NextRequest) => {
       throw new Error("Token not found");
     }
 
-    // Verify the token using the secret from environment variables
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET!);
+   
+    interface DecodedToken {
+      id: string;
+      
+    }
+
+    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET!) as DecodedToken;
 
     console.log(
       "This token is from Helper Function Decoded Token:",
       decodedToken
     );
 
-    return decodedToken;
-  }
-  catch (err: any) {
+    return decodedToken.id;
+
+  } catch (err: any) {
     console.error("Error verifying token:", err.message);
     // You can handle specific error cases here, e.g. token expired, invalid token, etc.
     throw new Error(err.message || "Token verification failed");
