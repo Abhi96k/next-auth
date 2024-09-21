@@ -1,28 +1,43 @@
-import { Html } from "next/document";
 import nodemailer from "nodemailer";
 
-export const sendEmail = async ({ email, emailType, userID }) => {
+interface SendEmailProps {
+  email: string;
+  emailType: "VERIFY" | "RESET";
+  userID: string;
+}
+
+export const sendEmail = async ({
+  email,
+  emailType,
+  userID,
+}: SendEmailProps): Promise<
+  { success: boolean; message: string } | nodemailer.SentMessageInfo
+> => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.forwardemail.net",
-      port: 465,
-      secure: true,
+      host: "smtp.forwardemail.net", // Email service host
+      port: 465, // Port for secure connection
+      secure: true, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER, // Username from environment
+        pass: process.env.EMAIL_PASS, // Password from environment
       },
     });
 
     const mailOptions = {
-      from: "abhisheknangare96k@gmail.com",
-      to: email,
+      from: "abhisheknangare96k@gmail.com", // Sender's email
+      to: email, // Receiver's email
       subject:
-        emailType === "VERIFY" ? "Verify your email" : "Reset your password",
-      text: "Hello world?",
-      html: "<b>Hello world?</b>",
+        emailType === "VERIFY" ? "Verify your email" : "Reset your password", // Subject line
+      text: "Hello world?", // Plain text body
+      html: "<b>Hello world?</b>", // HTML body
     };
+
+    const mailResponse = await transporter.sendMail(mailOptions);
+
+    return mailResponse; // Return the nodemailer response on success
   } catch (err) {
-    console.error(err);
-    console.log("Error sending email");
+    console.error("Error sending email:", err);
+    return { success: false, message: "Error sending email" }; // Return error response
   }
 };
