@@ -1,43 +1,52 @@
 import nodemailer from "nodemailer";
+import User from "@/models/userModel";
+import bcryptjs from "bcryptjs";
 
-interface SendEmailProps {
-  email: string;
-  emailType: "VERIFY" | "RESET";
-  userID: string;
-}
-
-export const sendEmail = async ({
-  email,
-  emailType,
-  userID,
-}: SendEmailProps): Promise<
-  { success: boolean; message: string } | nodemailer.SentMessageInfo
-> => {
+export const sendEmail = async ({ email, emailType, userId }: any) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.forwardemail.net", // Email service host
-      port: 465, // Port for secure connection
-      secure: true, // true for 465, false for other ports
+    const hashedToken = await bcryptjs.hash(userId.toString(), 10);
+
+    if (emailType === "VERIFY") {
+      await User.findByIdAndUpdate(userId, {
+        verifyToken: hashedToken,
+        verifyTokenExpiry: Date.now() + 3600000,
+      });
+    } else if (emailType === "RESET") {
+      await User.findByIdAndUpdate(userId, {
+        forgotPasswordToken: hashedToken,
+        forgotPasswordTokenExpiry: Date.now() + 3600000,
+      });
+    }
+
+    const transport = nodemailer.createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
       auth: {
-        user: process.env.EMAIL_USER, // Username from environment
-        pass: process.env.EMAIL_PASS, // Password from environment
+        user: "3fd364695517df",
+        pass: "7383d58fd399cf",
       },
     });
 
     const mailOptions = {
-      from: "abhisheknangare96k@gmail.com", // Sender's email
-      to: email, // Receiver's email
+      from: "abhisheknangare96k@gmail.com",
+      to: email,
       subject:
-        emailType === "VERIFY" ? "Verify your email" : "Reset your password", // Subject line
-      text: "Hello world?", // Plain text body
-      html: "<b>Hello world?</b>", // HTML body
+        emailType === "VERIFY" ? "Verify your email" : "Reset your password",
+      html: `<p>Click <a href="${
+        process.env.DOMAIN
+      }/verifyemail?token=${hashedToken}">here</a> to ${
+        emailType === "VERIFY" ? "verify your email" : "reset your password"
+      }
+            or copy and paste the link below in your browser. <br> ${
+              process.env.DOMAIN
+            }/verifyemail?token=${hashedToken}
+            </p>`,
     };
 
-    const mailResponse = await transporter.sendMail(mailOptions);
+    const mailresponse = await transport.sendMail(mailOptions);
 
-    return mailResponse; // Return the nodemailer response on success
-  } catch (err) {
-    console.error("Error sending email:", err);
-    return { success: false, message: "Error sending email" }; // Return error response
+    return mailresponse;
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 };
