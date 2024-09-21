@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         }
       );
     }
-    
+
     console.log("user exists");
 
     //check if password is correct
@@ -62,6 +62,8 @@ export async function POST(request: NextRequest) {
       message: "Login successful",
       success: true,
     });
+
+    console.log("response:-  ", response);
 
     response.cookies.set("token", token, {
       httpOnly: true,
