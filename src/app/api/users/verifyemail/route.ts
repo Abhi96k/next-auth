@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       {
         message: "Email verified",
       },
+
       {
         status: 200,
       }
