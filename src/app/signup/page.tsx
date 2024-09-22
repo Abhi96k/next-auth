@@ -5,7 +5,7 @@ export default function SignupPage() {
   const [user, setUser] = React.useState({
     email:"",
     password:"",
-    username:"";
+    username:""
   });
 
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
