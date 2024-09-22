@@ -1,9 +1,22 @@
 import React from "react";
 
-export const SignUpPage = () => {
+export default function SignupPage() {
+
+  const [user, setUser] = React.useState({
+    email:"",
+    password:"",
+    username:"";
+  });
+
+  const [buttonDisabled, setButtonDisabled] = React.useState(false);
+
+  const [loading, setLoading] = React.useState(false);
+
+  const onSignup = async () => {
+     
+  }
+
   return (
-    <div>
-      <h1>Sign Up</h1>
-    </div>
-  );
-};
+
+  )
+}
